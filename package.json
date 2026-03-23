@@ -1,0 +1,9 @@
+{
+  "name": "grana-certa",
+  "version": "0.1.0",
+  "scripts": {},
+  "keywords": [],
+  "author": "Isaac Porpino",
+  "license": "MIT",
+  "description": "Sistema de controle financeiro pessoal desenvolvido com HTML, CSS e JavaScript."
+}
