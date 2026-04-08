@@ -1,7 +1,9 @@
 {
   "name": "grana-certa",
   "version": "0.1.0",
-  "scripts": {},
+  "scripts": {
+    "server": "json-server --watch db.json --port 3000"
+  },
   "keywords": [],
   "author": "Isaac Porpino",
   "license": "MIT",

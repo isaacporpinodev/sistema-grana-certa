@@ -3,6 +3,7 @@
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
   font-family: var(--font-primary);
   background-color: var(--color-bg);
@@ -10,6 +11,7 @@ body {
   min-height: 100vh;
   transition: var(--transition);
 }
+
 button {
   font-family: var(--font-primary);
   cursor: pointer;
@@ -54,6 +56,7 @@ select {
   border-radius: var(--radius-sm);
   font-size: 0.85rem;
 }
+
 .theme-toggle:hover {
   background-color: var(--color-bg);
 }
@@ -81,6 +84,7 @@ select {
   font-weight: 400;
   color: var(--color-text);
 }
+
 .user-avatar {
   height: 2rem;
   width: 2rem;
@@ -93,6 +97,7 @@ select {
   font-size: 0.85rem;
   font-weight: 600;
 }
+
 .user-arrow {
   font-size: 0.75rem;
   color: var(--color-text-light);
@@ -111,7 +116,7 @@ select {
   right: 0;
 }
 
-.dropdown-menu a{
+.dropdown-menu a {
   display: block;
   text-decoration: none;
   color: var(--color-text);
@@ -119,10 +124,275 @@ select {
   border-radius: var(--radius-sm);
 }
 
-.dropdown-menu a:hover{
+.dropdown-menu a:hover {
   background-color: var(--color-surface-alt);
 }
 
-.dropdown-menu.open{
+.dropdown-menu.open {
   display: block;
+}
+
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.hero {
+  padding: 2rem;
+  margin-bottom: 2rem;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+}
+
+.hero h2 {
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.hero p {
+  color: var(--color-text-light);
+  line-height: 1.5;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.summary-card {
+  background-color: var(--color-surface-alt);
+  box-shadow: var(--shadow-md);
+  padding: 2rem;
+  border-radius: var(--radius-md);
+}
+
+.summary-card h3 {
+  font-size: 1rem;
+  color: var(--color-text-light);
+  margin-bottom: 1rem;
+}
+
+.summary-card p {
+  font-size: 2.2rem;
+  font-weight: 600;
+}
+
+.entradas p {
+  color: var(--color-success);
+}
+
+.saidas p {
+  color: var(--color-danger);
+}
+
+.saldo p {
+  color: var(--color-primary);
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.form-section,
+.transactions-section {
+  background-color: var(--color-surface-alt);
+  box-shadow: var(--shadow-md);
+  padding: 2rem;
+  border-radius: var(--radius-md);
+}
+
+.form-section h3,
+.transactions-section h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.transaction-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-light);
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border-radius: var(--radius-md);
+}
+
+.submit-button {
+  width: 100%;
+  padding: 0.85rem;
+  border: none;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.submit-button:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.transactions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-group select {
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border-radius: var(--radius-md);
+}
+
+.transactions-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.transactions-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.transactions-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.transactions-table td {
+  padding: 1rem;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.transactions-table tbody tr:hover {
+  background-color: var(--color-surface);
+  transition: var(--transition);
+}
+
+.transactions-table td:last-child {
+  text-align: center;
+}
+
+.transactions-table tbody td[colspan] {
+  padding: 1.25rem;
+  text-align: center;
+  color: var(--color-text-light);
+}
+
+.action-button {
+  padding: 0.45rem 0.8rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.edit-button {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.edit-button:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.delete-button {
+  background-color: var(--color-danger);
+  color: #ffffff;
+}
+
+.delete-button:hover {
+  opacity: 0.9;
+}
+
+.transactions-table td:last-child .action-button + .action-button {
+  margin-left: 0.5rem;
+}
+
+.form-message {
+  display: none;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border-left: 4px solid var(--color-primary);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-message.success {
+  color: var(--color-success);
+  border-left: 4px solid var(--color-success);
+}
+
+.form-message.error {
+  color: var(--color-danger);
+  border-left: 4px solid var(--color-danger);
+}
+
+.form-message.warning {
+  color: var(--color-warning);
+  border-left: 4px solid var(--color-warning);
+}
+
+.footer {
+  margin-top: 2rem;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  color: var(--color-text-light);
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.footer p {
+  font-size: 0.95rem;
 }

@@ -31,4 +31,6 @@ body.dark {
   --color-success: #50c878;
   --color-danger: #ff6b6b;
   --color-warning: #ffc107;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.45);
 }
