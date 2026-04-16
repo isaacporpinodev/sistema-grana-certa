@@ -1,3 +1,37 @@
 {
-  "transactions": []
+  "transactions": [
+    {
+      "id": "fb11",
+      "description": "alario",
+      "amount": 121221312,
+      "category": "outros",
+      "date": "2026-04-15",
+      "type": ""
+    },
+    {
+      "id": "46ad",
+      "description": "alario",
+      "amount": 11233,
+      "category": "outros",
+      "date": "2026-04-15",
+      "type": "entrada"
+    },
+    {
+      "id": "8326",
+      "description": "internet",
+      "amount": 110,
+      "category": "moradia",
+      "date": "2026-04-15",
+      "type": "saida"
+    },
+    {
+      "id": "7186",
+      "description": "luz",
+      "amount": 150,
+      "category": "moradia",
+      "date": "2026-04-16",
+      "type": "saida"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
