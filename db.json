@@ -1,35 +1,27 @@
 {
   "transactions": [
     {
-      "id": "fb11",
-      "description": "alario",
-      "amount": 121221312,
-      "category": "outros",
-      "date": "2026-04-15",
-      "type": ""
-    },
-    {
-      "id": "46ad",
-      "description": "alario",
-      "amount": 11233,
-      "category": "outros",
-      "date": "2026-04-15",
-      "type": "entrada"
-    },
-    {
-      "id": "8326",
-      "description": "internet",
-      "amount": 110,
+      "id": "0453",
+      "description": "luz",
+      "amount": 150,
       "category": "moradia",
       "date": "2026-04-15",
       "type": "saida"
     },
     {
-      "id": "7186",
-      "description": "luz",
-      "amount": 150,
+      "id": "7efd",
+      "description": "Sálario",
+      "amount": 6000,
+      "category": "outros",
+      "date": "2026-04-30",
+      "type": "entrada"
+    },
+    {
+      "id": "39e2",
+      "description": "internet",
+      "amount": 110,
       "category": "moradia",
-      "date": "2026-04-16",
+      "date": "2026-04-21",
       "type": "saida"
     }
   ],

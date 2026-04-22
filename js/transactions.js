@@ -1,82 +1,246 @@
-const formulario = document.getElementById("transaction-form");
-formulario.addEventListener("submit", async (ev) => {
-  ev.preventDefault();
+const API_URL = "http://localhost:3000/transactions";
 
-  const description = document.getElementById("description").value;
-  const amount = Number(document.getElementById("amount").value);
-  const category = document.getElementById("category").value;
-  const date = document.getElementById("date").value;
-  const type = document.getElementById("type").value;
+const transactionForm = document.getElementById("transaction-form");
+const formMessage = document.getElementById("form-message");
+const transactionsList = document.getElementById("transactions-list");
+const totalIncomeElement = document.getElementById("total-entradas");
+const totalExpenseElement = document.getElementById("total-saidas");
+const balanceElement = document.getElementById("saldo-total");
 
-  const transactionData = {
-    description,
-    amount,
-    category,
-    date,
-    type,
-  };
-  console.log(transactionData);
+function showFormMessage(message, type) {
+  formMessage.classList.remove("success", "error", "warning");
+  formMessage.style.display = "block";
+  formMessage.innerText = message;
+  formMessage.classList.add(type);
+}
 
-  const response = await fetch("http://localhost:3000/transactions", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
+function hideFormMessage() {
+  formMessage.style.display = "none";
+}
 
-    body: JSON.stringify(transactionData),
-  });
-
-  if (response.ok) {
-    formulario.reset();
-    const form = document.getElementById("form-message");
-    form.innerText = "Transação adicionada com sucesso!";
-  }
-});
-
-async function fetchTransactions() {
-  const response = await fetch("http://localhost:3000/transactions", {
-    method: "GET",
-    headers: {
-      "content-type": "application/json",
-    },
-  });
-
-  const json = await response.json();
-
-  const transactionsList = document.getElementById("transactions-list");
-  transactionsList.innerText = "";
-
-  json.forEach((element) => {
-    const transactionRow = document.createElement("tr");
-    const descriptionCell = document.createElement("td");
-    const amountCell = document.createElement("td");
-    const categoryCell = document.createElement("td");
-    const dateCell = document.createElement("td");
-    const typeCell = document.createElement("td");
-
-    typeCell.innerText = element.type;
-    dateCell.innerText = element.date;
-    amountCell.innerText = element.amount.toLocaleString("pt-br", {
-      style: "currency",
-      currency: "BRL",
-    });
-    categoryCell.innerText = element.category;
-    descriptionCell.innerText = element.description;
-
-    if (element.type === "entrada") {
-      amountCell.classList.add("income");
-    } else {
-      amountCell.classList.add("expense");
-    }
-
-    transactionRow.append(
-      descriptionCell,
-      categoryCell,
-      dateCell,
-      typeCell,
-      amountCell,
-    );
-    transactionsList.append(transactionRow);
+function formatCurrency(value) {
+  return Number(value).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
   });
 }
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("pt-BR");
+}
+
+function getTransactionFormData() {
+  return {
+    description: document.getElementById("description").value.trim(),
+    amount: Number(document.getElementById("amount").value),
+    category: document.getElementById("category").value,
+    date: document.getElementById("date").value,
+    type: document.getElementById("type").value,
+  };
+}
+
+function validateTransactionData(transactionData) {
+  if (!transactionData.description) {
+    return "Informe uma descrição para a movimentação.";
+  }
+
+  if (Number.isNaN(transactionData.amount) || transactionData.amount <= 0) {
+    return "Informe um valor válido maior que zero.";
+  }
+
+  if (!transactionData.category) {
+    return "Selecione uma categoria.";
+  }
+
+  if (!transactionData.date) {
+    return "Selecione uma data.";
+  }
+
+  if (!transactionData.type) {
+    return "Selecione o tipo da movimentação.";
+  }
+
+  return null;
+}
+
+function createActionsCell(transaction) {
+  const actionsCell = document.createElement("td");
+  const deleteButton = document.createElement("button");
+  const editButton = document.createElement("button")
+
+  deleteButton.type = "button";
+  deleteButton.innerText = "Excluir";
+  deleteButton.classList.add("action-button", "delete-button");
+
+  editButton.type = "button";
+  editButton.innerText = "Editar";
+  editButton.classList.add("action-button", "edit-button");
+
+  deleteButton.addEventListener("click", ()=>{
+    deleteTransaction(transaction.id)
+  });
+
+  actionsCell.append(deleteButton,editButton);
+
+  return actionsCell;
+}
+
+function createTransactionRow(transaction) {
+  const transactionRow = document.createElement("tr");
+
+  const descriptionCell = document.createElement("td");
+  const categoryCell = document.createElement("td");
+  const dateCell = document.createElement("td");
+  const typeCell = document.createElement("td");
+  const amountCell = document.createElement("td");
+  const actionsCell = createActionsCell(transaction);
+
+
+  descriptionCell.innerText = transaction.description;
+  categoryCell.innerText = transaction.category;
+  dateCell.innerText = formatDate(transaction.date);
+
+  if (transaction.type === "entrada") {
+    typeCell.innerText = "Entrada";
+    amountCell.classList.add("income");
+  } else if (transaction.type === "saida") {
+    typeCell.innerText = "Saída";
+    amountCell.classList.add("expense");
+  } else {
+    typeCell.innerText = "-";
+  }
+
+  amountCell.innerText = formatCurrency(transaction.amount);
+
+  transactionRow.append(
+    descriptionCell,
+    categoryCell,
+    dateCell,
+    typeCell,
+    amountCell,
+    actionsCell,
+  );
+
+  return transactionRow;
+}
+
+function renderEmptyState() {
+  transactionsList.innerHTML = `
+    <tr>
+      <td colspan="6">Nenhuma movimentação cadastrada ainda.</td>
+    </tr>
+  `;
+}
+
+function updateSummaryCards(transactions) {
+  let totalIncome = 0;
+  let totalExpense = 0;
+
+  transactions.forEach((transaction) => {
+    if (transaction.type === "entrada") {
+      totalIncome += Number(transaction.amount);
+    }
+
+    if (transaction.type === "saida") {
+      totalExpense += Number(transaction.amount);
+    }
+  });
+
+  const balance = totalIncome - totalExpense;
+
+  totalIncomeElement.innerText = formatCurrency(totalIncome);
+  totalExpenseElement.innerText = formatCurrency(totalExpense);
+  balanceElement.innerText = formatCurrency(balance);
+}
+
+function renderTransactions(transactions) {
+  transactionsList.innerHTML = "";
+
+  if (transactions.length === 0) {
+    renderEmptyState();
+    updateSummaryCards([]);
+    return;
+  }
+
+  transactions.forEach((transaction) => {
+    const transactionRow = createTransactionRow(transaction);
+    transactionsList.append(transactionRow);
+  });
+
+  updateSummaryCards(transactions);
+}
+
+async function fetchTransactions() {
+  try {
+    const response = await fetch(API_URL);
+    const transactions = await response.json();
+
+    renderTransactions(transactions);
+  } catch (error) {
+    console.error("Erro ao buscar transações:", error);
+    renderEmptyState();
+  }
+}
+
+async function handleTransactionSubmit(event) {
+  event.preventDefault();
+
+  hideFormMessage();
+
+  const transactionData = getTransactionFormData();
+  const validationMessage = validateTransactionData(transactionData);
+
+  if (validationMessage) {
+    showFormMessage(validationMessage, "error");
+    return;
+  }
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(transactionData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Request failed");
+    }
+
+    transactionForm.reset();
+    showFormMessage("Movimentação adicionada com sucesso!", "success");
+    fetchTransactions();
+
+    setTimeout(() => {
+      hideFormMessage();
+    }, 3000);
+  } catch (error) {
+    showFormMessage("Erro ao salvar movimentação.", "error");
+  }
+}
+
+async function deleteTransaction(id) {
+  try {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      throw new Error("Request failed");
+    }
+
+    showFormMessage("Movimentação excluída com sucesso!", "success");
+    fetchTransactions();
+
+    setTimeout(() => {
+      hideFormMessage();
+    }, 3000);
+  } catch (error) {
+    showFormMessage("Erro ao excluir movimentação.", "error");
+  }
+}
+
+transactionForm.addEventListener("submit", handleTransactionSubmit);
+
 fetchTransactions();
