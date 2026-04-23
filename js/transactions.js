@@ -1,4 +1,5 @@
 const API_URL = "http://localhost:3000/transactions";
+let editingTransactionId = null;
 
 const transactionForm = document.getElementById("transaction-form");
 const formMessage = document.getElementById("form-message");
@@ -6,6 +7,8 @@ const transactionsList = document.getElementById("transactions-list");
 const totalIncomeElement = document.getElementById("total-entradas");
 const totalExpenseElement = document.getElementById("total-saidas");
 const balanceElement = document.getElementById("saldo-total");
+const submitBtn = document.querySelector(".submit-button");
+const cancelEditBtn = document.getElementById("cancel-edit-button")
 
 function showFormMessage(message, type) {
   formMessage.classList.remove("success", "error", "warning");
@@ -67,7 +70,7 @@ function validateTransactionData(transactionData) {
 function createActionsCell(transaction) {
   const actionsCell = document.createElement("td");
   const deleteButton = document.createElement("button");
-  const editButton = document.createElement("button")
+  const editButton = document.createElement("button");
 
   deleteButton.type = "button";
   deleteButton.innerText = "Excluir";
@@ -77,11 +80,18 @@ function createActionsCell(transaction) {
   editButton.innerText = "Editar";
   editButton.classList.add("action-button", "edit-button");
 
-  deleteButton.addEventListener("click", ()=>{
-    deleteTransaction(transaction.id)
+  editButton.addEventListener("click", () => {
+    fillFormWithTransaction(transaction);
+    editingTransactionId = transaction.id;
+    submitBtn.innerText = "Atualizar movimentação";
+    cancelEditBtn.style.display = "inline-block"
   });
 
-  actionsCell.append(deleteButton,editButton);
+  deleteButton.addEventListener("click", () => {
+    deleteTransaction(transaction.id);
+  });
+
+  actionsCell.append(deleteButton, editButton);
 
   return actionsCell;
 }
@@ -95,7 +105,6 @@ function createTransactionRow(transaction) {
   const typeCell = document.createElement("td");
   const amountCell = document.createElement("td");
   const actionsCell = createActionsCell(transaction);
-
 
   descriptionCell.innerText = transaction.description;
   categoryCell.innerText = transaction.category;
@@ -197,21 +206,38 @@ async function handleTransactionSubmit(event) {
   }
 
   try {
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(transactionData),
-    });
+    let response;
+    let successMessage;
+
+    if (!editingTransactionId) {
+      response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(transactionData),
+      });
+      successMessage = "Movimentação adicionada com sucesso!";
+    } else {
+      response = await fetch(`${API_URL}/${editingTransactionId}`, {
+        method: "PUT",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(transactionData),
+      });
+      successMessage = "Movimentação atualizada com sucesso!";
+    }
 
     if (!response.ok) {
       throw new Error("Request failed");
     }
 
     transactionForm.reset();
-    showFormMessage("Movimentação adicionada com sucesso!", "success");
+    showFormMessage(successMessage, "success");
     fetchTransactions();
+    editingTransactionId = null;
+    submitBtn.innerText = "Salvar movimentação";
 
     setTimeout(() => {
       hideFormMessage();
@@ -239,6 +265,24 @@ async function deleteTransaction(id) {
   } catch (error) {
     showFormMessage("Erro ao excluir movimentação.", "error");
   }
+}
+
+function fillFormWithTransaction(transaction) {
+  document.getElementById("description").value = transaction.description;
+
+  document.getElementById("amount").value = transaction.amount;
+
+  document.getElementById("category").value = transaction.category;
+
+  document.getElementById("date").value = transaction.date;
+
+  document.getElementById("type").value = transaction.type;
+}
+
+function cancelEditing() {
+  transactionForm.reset();
+  editingTransactionId = null;
+  submitBtn.innerText = "Salvar movimentação";
 }
 
 transactionForm.addEventListener("submit", handleTransactionSubmit);

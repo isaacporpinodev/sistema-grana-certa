@@ -1,28 +1,68 @@
 {
   "transactions": [
     {
-      "id": "0453",
-      "description": "luz",
-      "amount": 150,
-      "category": "moradia",
-      "date": "2026-04-15",
-      "type": "saida"
-    },
-    {
-      "id": "7efd",
       "description": "Sálario",
-      "amount": 6000,
+      "amount": 2800,
       "category": "outros",
-      "date": "2026-04-30",
-      "type": "entrada"
+      "date": "2026-04-22",
+      "type": "entrada",
+      "id": "bf15"
     },
     {
-      "id": "39e2",
-      "description": "internet",
-      "amount": 110,
+      "description": "investimento",
+      "amount": 100,
+      "category": "outros",
+      "date": "2026-04-22",
+      "type": "saida",
+      "id": "52dd"
+    },
+    {
+      "id": "b47d",
+      "description": "Aluguel",
+      "amount": 500,
       "category": "moradia",
-      "date": "2026-04-21",
+      "date": "2026-04-25",
       "type": "saida"
+    },
+    {
+      "id": "3c46",
+      "description": "Mercado",
+      "amount": 250,
+      "category": "alimentacao",
+      "date": "2026-04-22",
+      "type": "saida"
+    },
+    {
+      "id": "fea9",
+      "description": "luz",
+      "amount": 100,
+      "category": "moradia",
+      "date": "2026-04-22",
+      "type": "saida"
+    },
+    {
+      "description": "Emergencia",
+      "amount": 350,
+      "category": "outros",
+      "date": "2026-04-22",
+      "type": "saida",
+      "id": "6a92"
+    },
+    {
+      "id": "a57a",
+      "description": "ifood",
+      "amount": 200,
+      "category": "alimentacao",
+      "date": "2026-04-22",
+      "type": "saida"
+    },
+    {
+      "description": "internet",
+      "amount": 10,
+      "category": "moradia",
+      "date": "2026-04-22",
+      "type": "saida",
+      "id": "1ea5"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

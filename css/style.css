@@ -417,3 +417,7 @@ select {
 .expense::before {
   content: "- ";
 }
+
+.cancel-edit-button{
+  display: none;
+}

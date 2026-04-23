@@ -18,7 +18,9 @@ Hoje o projeto ja consegue:
 - buscar as movimentacoes salvas
 - mostrar as movimentacoes na tabela
 - calcular `Entradas`, `Saidas` e `Saldo`
-- exibir um botao de acao na tabela
+- excluir movimentacoes
+- editar movimentacoes
+- exibir botoes de acao na tabela
 
 ## Tecnologias usadas
 
@@ -68,7 +70,7 @@ Guarda os arquivos JavaScript.
 
 Arquivos principais:
 - `main.js`: cuida de partes gerais da interface, como menu do usuario e tema
-- `transactions.js`: cuida do formulario, validacao, busca de dados, tabela e totais
+- `transactions.js`: cuida do formulario, validacao, criacao, edicao, exclusao, tabela e totais
 
 Arquivos que ainda estao vazios ou em preparacao:
 - `filters.js`
@@ -148,6 +150,28 @@ Ou seja:
 usuario envia -> JS valida -> salva -> busca de novo -> atualiza tela
 ```
 
+### Fluxo ao editar uma movimentacao
+
+Quando o usuario clica em `Editar`:
+
+1. O JavaScript pega os dados da transacao daquela linha.
+2. Preenche o formulario com esses dados.
+3. Guarda o `id` da transacao em edicao.
+4. O botao principal muda para mostrar que agora o formulario esta em modo edicao.
+
+Depois, quando o usuario clica em salvar:
+
+1. O JavaScript valida os dados novamente.
+2. Percebe que existe uma transacao em edicao.
+3. Em vez de criar uma nova, atualiza a transacao existente.
+4. Depois limpa o modo de edicao.
+
+Ou seja:
+
+```text
+clicou em editar -> formulario foi preenchido -> id foi guardado -> submit atualiza
+```
+
 ## Como o `transactions.js` esta organizado
 
 Antes, muita coisa ficava misturada no mesmo bloco.
@@ -163,9 +187,14 @@ No comeco do arquivo existem constantes como:
 - `formMessage`
 - `transactionsList`
 
+Tambem existe uma variavel importante:
+- `editingTransactionId`
+
 Essas constantes servem para guardar:
 - a URL da API
 - referencias para elementos do HTML
+
+Ja `editingTransactionId` serve para guardar qual transacao esta sendo editada no momento.
 
 Isso evita repetir `document.getElementById(...)` toda hora.
 
@@ -257,6 +286,7 @@ As duas funcoes principais hoje sao:
 
 - `fetchTransactions()`
 - `handleTransactionSubmit()`
+- `deleteTransaction()`
 
 #### `fetchTransactions()`
 Responsabilidade:
@@ -285,6 +315,8 @@ Exemplo de ideia:
 No seu projeto, hoje ele esta sendo usado para:
 - `GET`: buscar movimentacoes
 - `POST`: salvar movimentacoes
+- `PUT`: atualizar movimentacoes
+- `DELETE`: excluir movimentacoes
 
 ### O que e validacao
 
@@ -313,6 +345,108 @@ nao tem erro? -> continua
 ```
 
 Sem `return`, o codigo continuaria e poderia salvar dados errados.
+
+### O que e `null`
+
+`null` significa, de forma simples:
+
+- vazio
+- sem valor no momento
+- nada guardado ali agora
+
+Exemplo mental:
+
+```text
+caixa vazia = null
+```
+
+No seu projeto, essa ideia aparece em:
+
+```js
+let editingTransactionId = null;
+```
+
+Isso significa:
+- a variavel existe
+- mas no inicio nao tem nenhum `id` guardado nela
+- ou seja, nenhuma transacao esta sendo editada
+
+### Por que `editingTransactionId = null` aparece mais de uma vez
+
+Essa e uma duvida muito comum para quem esta comecando.
+
+Voce pode ver estas duas linhas:
+
+```js
+let editingTransactionId = null;
+```
+
+e depois:
+
+```js
+editingTransactionId = null;
+```
+
+Parece igual, mas nao e a mesma acao.
+
+#### Primeiro caso
+
+```js
+let editingTransactionId = null;
+```
+
+Aqui voce esta:
+- criando a variavel
+- definindo o valor inicial dela
+
+Ou seja:
+- "quero uma variavel chamada `editingTransactionId`"
+- "ela vai comecar vazia"
+
+#### Segundo caso
+
+```js
+editingTransactionId = null;
+```
+
+Aqui voce nao esta criando a variavel de novo.
+
+Aqui voce esta:
+- pegando a variavel que ja existe
+- limpando o valor dela
+
+Ou seja:
+- antes ela podia ter um `id`
+- agora ela volta a ficar vazia
+
+### Exemplo simples
+
+```js
+let nome = "Isaac";
+nome = "Maria";
+nome = null;
+```
+
+O que aconteceu:
+
+1. A variavel `nome` foi criada com `"Isaac"`
+2. Depois o valor mudou para `"Maria"`
+3. Depois o valor mudou para `null`
+
+A variavel continuou sendo a mesma.
+So o valor dela mudou.
+
+Com `editingTransactionId` e igual:
+
+```text
+inicio da pagina -> null
+clicou em editar -> id da transacao
+salvou ou cancelou -> null de novo
+```
+
+Entao:
+- o valor `null` e o mesmo
+- mas o momento e a acao sao diferentes
 
 ### O que e separar responsabilidades
 
@@ -354,8 +488,8 @@ Esse padrao ajuda porque:
 ## O que ainda pode melhorar
 
 Proximos passos naturais do projeto:
-- fazer o botao `Excluir` realmente funcionar
-- implementar edicao de movimentacoes
+- criar um botao de cancelar edicao
+- mostrar visualmente quando o formulario estiver em modo edicao
 - criar filtro por mes
 - organizar melhor os arquivos JS ainda vazios
 - limpar dados antigos invalidos do `db.json`
@@ -373,7 +507,7 @@ formulario -> validacao -> API -> tabela -> cards
 ### E o arquivo mais importante hoje faz isso
 
 ```text
-ler dados -> validar -> salvar -> buscar de novo -> renderizar
+ler dados -> validar -> criar ou editar -> buscar de novo -> renderizar
 ```
 
 Se voce entender esse fluxo, ja esta entendendo o coracao do projeto.
