@@ -7,5 +7,8 @@
   "keywords": [],
   "author": "Isaac Porpino",
   "license": "MIT",
-  "description": "Sistema de controle financeiro pessoal desenvolvido com HTML, CSS e JavaScript."
+  "description": "Sistema de controle financeiro pessoal desenvolvido com HTML, CSS e JavaScript.",
+  "devDependencies": {
+    "json-server": "^1.0.0-beta.15"
+  }
 }
