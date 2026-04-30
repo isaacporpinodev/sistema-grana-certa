@@ -8,7 +8,8 @@ const totalIncomeElement = document.getElementById("total-entradas");
 const totalExpenseElement = document.getElementById("total-saidas");
 const balanceElement = document.getElementById("saldo-total");
 const submitBtn = document.querySelector(".submit-button");
-const cancelEditBtn = document.getElementById("cancel-edit-button")
+const cancelEditBtn = document.getElementById("cancel-edit-button");
+const monthFilter = document.getElementById("month-filter");
 
 function showFormMessage(message, type) {
   formMessage.classList.remove("success", "error", "warning");
@@ -29,8 +30,8 @@ function formatCurrency(value) {
 }
 
 function formatDate(dateString) {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("pt-BR");
+  const [year, month, day] = dateString.split("-");
+  return `${day}/${month}/${year}`;
 }
 
 function getTransactionFormData() {
@@ -84,7 +85,7 @@ function createActionsCell(transaction) {
     fillFormWithTransaction(transaction);
     editingTransactionId = transaction.id;
     submitBtn.innerText = "Atualizar movimentação";
-    cancelEditBtn.style.display = "inline-block"
+    cancelEditBtn.style.display = "inline-block";
   });
 
   deleteButton.addEventListener("click", () => {
@@ -94,6 +95,28 @@ function createActionsCell(transaction) {
   actionsCell.append(deleteButton, editButton);
 
   return actionsCell;
+}
+
+function formatCategory(category){
+  const categoryNames = {
+  alimentacao: "Alimentação",
+  assinaturas: "Assinaturas",
+  educacao: "Educação",
+  emergencia: "Emergência",
+  freelance: "Freelance",
+  internet: "Internet",
+  investimentos: "Investimentos",
+  lazer: "Lazer",
+  moradia: "Moradia",
+  outros: "Outros",
+  salario: "Salário",
+  saude: "Saúde",
+  servicos: "Serviços",
+  transporte: "Transporte",
+  venda: "Venda",
+};
+
+ return categoryNames[category] || category
 }
 
 function createTransactionRow(transaction) {
@@ -107,7 +130,7 @@ function createTransactionRow(transaction) {
   const actionsCell = createActionsCell(transaction);
 
   descriptionCell.innerText = transaction.description;
-  categoryCell.innerText = transaction.category;
+  categoryCell.innerText = formatCategory(transaction.category);
   dateCell.innerText = formatDate(transaction.date);
 
   if (transaction.type === "entrada") {
@@ -163,6 +186,24 @@ function updateSummaryCards(transactions) {
   balanceElement.innerText = formatCurrency(balance);
 }
 
+function filterTransactionsByMonth(transactions) {
+  const selectedMonth = monthFilter.value;
+
+  if (selectedMonth === "todos") {
+    return transactions;
+  } else {
+    return transactions.filter((transaction) => {
+      return transaction.date.startsWith(selectedMonth);
+    });
+  }
+}
+
+function sortTransactionsByDate(transactions){
+  return transactions.sort((a,b)=> {
+    return new Date(b.date) - new Date(a.date)
+    })
+}
+
 function renderTransactions(transactions) {
   transactionsList.innerHTML = "";
 
@@ -184,8 +225,10 @@ async function fetchTransactions() {
   try {
     const response = await fetch(API_URL);
     const transactions = await response.json();
+    const filteredTransactions = filterTransactionsByMonth(transactions);
+    const sortedTransactions = sortTransactionsByDate(filteredTransactions)
 
-    renderTransactions(transactions);
+    renderTransactions(sortedTransactions)
   } catch (error) {
     console.error("Erro ao buscar transações:", error);
     renderEmptyState();
@@ -238,6 +281,7 @@ async function handleTransactionSubmit(event) {
     fetchTransactions();
     editingTransactionId = null;
     submitBtn.innerText = "Salvar movimentação";
+    cancelEditBtn.style.display = "none";
 
     setTimeout(() => {
       hideFormMessage();
@@ -283,8 +327,11 @@ function cancelEditing() {
   transactionForm.reset();
   editingTransactionId = null;
   submitBtn.innerText = "Salvar movimentação";
+  cancelEditBtn.style.display = "none";
 }
 
 transactionForm.addEventListener("submit", handleTransactionSubmit);
+cancelEditBtn.addEventListener("click", cancelEditing);
+monthFilter.addEventListener("change", fetchTransactions);
 
 fetchTransactions();

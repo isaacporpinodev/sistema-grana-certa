@@ -20,6 +20,11 @@ Hoje o projeto ja consegue:
 - calcular `Entradas`, `Saidas` e `Saldo`
 - excluir movimentacoes
 - editar movimentacoes
+- cancelar uma edicao em andamento
+- filtrar as movimentacoes por mes
+- ordenar as movimentacoes da mais recente para a mais antiga
+- exibir categorias com nomes mais amigaveis
+- mostrar datas no formato brasileiro sem alterar o dia
 - exibir botoes de acao na tabela
 
 ## Tecnologias usadas
@@ -124,13 +129,15 @@ Quando a pagina carrega:
 
 1. O JavaScript chama a funcao que busca as movimentacoes.
 2. Essa funcao faz um `fetch` na API local.
-3. Os dados recebidos sao usados para montar as linhas da tabela.
-4. Depois os cards de resumo sao atualizados.
+3. Os dados recebidos podem ser filtrados pelo mes selecionado.
+4. Depois as movimentacoes sao ordenadas pela data mais recente.
+5. Os dados tratados sao usados para montar as linhas da tabela.
+6. Depois os cards de resumo sao atualizados.
 
 Ou seja:
 
 ```text
-pagina abre -> busca dados -> monta tabela -> calcula totais
+pagina abre -> busca dados -> filtra -> ordena -> monta tabela -> calcula totais
 ```
 
 ### Fluxo ao enviar o formulario
@@ -172,6 +179,39 @@ Ou seja:
 clicou em editar -> formulario foi preenchido -> id foi guardado -> submit atualiza
 ```
 
+### Fluxo ao cancelar uma edicao
+
+Quando o usuario clica em `Editar`, o formulario entra em modo de edicao.
+Se ele clicar em `Cancelar edicao`:
+
+1. O formulario e limpo.
+2. O `editingTransactionId` volta para `null`.
+3. O botao principal volta para `Salvar movimentacao`.
+4. O botao de cancelar edicao fica escondido novamente.
+
+Ou seja:
+
+```text
+editar -> preencher formulario -> cancelar -> limpar modo de edicao
+```
+
+### Fluxo ao filtrar por mes
+
+Quando o usuario muda o filtro de mes:
+
+1. O evento `change` do filtro chama `fetchTransactions()`.
+2. As movimentacoes sao buscadas novamente.
+3. A funcao `filterTransactionsByMonth()` verifica o mes selecionado.
+4. Se o filtro for `todos`, todas as movimentacoes continuam na lista.
+5. Se for um mes especifico, ficam apenas as movimentacoes cuja data comeca com aquele ano e mes.
+6. Depois a lista filtrada e ordenada por data.
+
+Ou seja:
+
+```text
+mudou o mes -> busca dados -> filtra por mes -> ordena -> renderiza
+```
+
 ## Como o `transactions.js` esta organizado
 
 Antes, muita coisa ficava misturada no mesmo bloco.
@@ -205,6 +245,7 @@ Exemplos:
 - `hideFormMessage()`
 - `formatCurrency()`
 - `formatDate()`
+- `formatCategory()`
 
 Essas funcoes fazem tarefas pequenas e repetidas.
 
@@ -280,7 +321,26 @@ saldo = entradas - saidas
 
 No final, ela atualiza os 3 cards da tela.
 
-### 7. Funcoes principais
+### 7. Funcoes de filtro e ordenacao
+
+Funcoes:
+
+```js
+filterTransactionsByMonth()
+sortTransactionsByDate()
+```
+
+`filterTransactionsByMonth()` recebe as movimentacoes e devolve apenas as que pertencem ao mes selecionado.
+
+`sortTransactionsByDate()` recebe as movimentacoes e coloca as mais recentes primeiro.
+
+Essas funcoes deixam o fluxo mais claro:
+
+```text
+lista original -> lista filtrada -> lista ordenada
+```
+
+### 8. Funcoes principais
 
 As duas funcoes principais hoje sao:
 
@@ -291,6 +351,8 @@ As duas funcoes principais hoje sao:
 #### `fetchTransactions()`
 Responsabilidade:
 - buscar as transacoes na API
+- filtrar as transacoes pelo mes selecionado
+- ordenar as transacoes pela data
 - mandar renderizar a tabela
 
 #### `handleTransactionSubmit()`
@@ -345,6 +407,43 @@ nao tem erro? -> continua
 ```
 
 Sem `return`, o codigo continuaria e poderia salvar dados errados.
+
+### O que e `startsWith`
+
+`startsWith` verifica se um texto comeca com outro texto.
+
+No filtro por mes, a data salva vem assim:
+
+```text
+2026-04-30
+```
+
+E o filtro vem assim:
+
+```text
+2026-04
+```
+
+Entao o projeto verifica:
+
+```text
+"2026-04-30" comeca com "2026-04"?
+```
+
+Se sim, aquela movimentacao pertence ao mes selecionado.
+
+### Por que a data e formatada manualmente
+
+Antes, a data era exibida usando `new Date(dateString)`.
+Isso podia causar um problema de fuso horario: uma data salva como `2026-04-30` podia aparecer como `29/04/2026`.
+
+Agora a funcao `formatDate()` separa a string manualmente:
+
+```text
+2026-04-30 -> 30/04/2026
+```
+
+Assim a data aparece no formato brasileiro sem mudar o dia.
 
 ### O que e `null`
 
@@ -488,11 +587,24 @@ Esse padrao ajuda porque:
 ## O que ainda pode melhorar
 
 Proximos passos naturais do projeto:
-- criar um botao de cancelar edicao
 - mostrar visualmente quando o formulario estiver em modo edicao
-- criar filtro por mes
+- confirmar antes de excluir uma movimentacao
+- tratar o formulario quando o usuario trocar o filtro de mes
 - organizar melhor os arquivos JS ainda vazios
 - limpar dados antigos invalidos do `db.json`
+- melhorar o layout para ficar mais proximo das telas de referencia
+- preparar o projeto para portfolio com README final, prints e explicacao das funcionalidades
+
+## Plano para a proxima etapa
+
+Na proxima etapa, o foco sera continuar melhorando a parte funcional antes do layout.
+
+Ordem sugerida:
+
+1. Adicionar confirmacao antes de excluir uma movimentacao.
+2. Revisar pequenos pontos de organizacao no `transactions.js`.
+3. Melhorar a experiencia quando o usuario troca o filtro de mes com o formulario preenchido.
+4. Depois disso, comecar a reformar o layout com calma, seguindo as telas de referencia.
 
 ## Resumo final
 

@@ -9,14 +9,6 @@
       "id": "bf15"
     },
     {
-      "description": "investimento",
-      "amount": 100,
-      "category": "outros",
-      "date": "2026-04-22",
-      "type": "saida",
-      "id": "52dd"
-    },
-    {
       "id": "b47d",
       "description": "Aluguel",
       "amount": 500,
@@ -25,12 +17,12 @@
       "type": "saida"
     },
     {
-      "id": "3c46",
       "description": "Mercado",
-      "amount": 250,
+      "amount": 270,
       "category": "alimentacao",
       "date": "2026-04-22",
-      "type": "saida"
+      "type": "saida",
+      "id": "3c46"
     },
     {
       "id": "fea9",
@@ -63,6 +55,46 @@
       "date": "2026-04-22",
       "type": "saida",
       "id": "1ea5"
+    },
+    {
+      "description": "Sálario",
+      "amount": 3000,
+      "category": "outros",
+      "date": "2026-01-30",
+      "type": "entrada",
+      "id": "lEXgBytmdbg"
+    },
+    {
+      "description": "Aluguel",
+      "amount": 800,
+      "category": "moradia",
+      "date": "2026-03-24",
+      "type": "saida",
+      "id": "Jvdfgp-FIj8"
+    },
+    {
+      "description": "Aluguel",
+      "amount": 800,
+      "category": "moradia",
+      "date": "2026-01-24",
+      "type": "saida",
+      "id": "si8VSIg76MA"
+    },
+    {
+      "description": "investimento",
+      "amount": 1000,
+      "category": "investimentos",
+      "date": "2026-01-30",
+      "type": "saida",
+      "id": "N1FL-Ne9QCA"
+    },
+    {
+      "description": "luz",
+      "amount": 150,
+      "category": "moradia",
+      "date": "2026-01-10",
+      "type": "saida",
+      "id": "xnxQeBVrXp8"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
