@@ -1,5 +1,6 @@
 const API_URL = "http://localhost:3000/transactions";
 let editingTransactionId = null;
+let transactionIdToDelete = null
 
 const transactionForm = document.getElementById("transaction-form");
 const formMessage = document.getElementById("form-message");
@@ -97,26 +98,26 @@ function createActionsCell(transaction) {
   return actionsCell;
 }
 
-function formatCategory(category){
+function formatCategory(category) {
   const categoryNames = {
-  alimentacao: "Alimentação",
-  assinaturas: "Assinaturas",
-  educacao: "Educação",
-  emergencia: "Emergência",
-  freelance: "Freelance",
-  internet: "Internet",
-  investimentos: "Investimentos",
-  lazer: "Lazer",
-  moradia: "Moradia",
-  outros: "Outros",
-  salario: "Salário",
-  saude: "Saúde",
-  servicos: "Serviços",
-  transporte: "Transporte",
-  venda: "Venda",
-};
+    alimentacao: "Alimentação",
+    assinaturas: "Assinaturas",
+    educacao: "Educação",
+    emergencia: "Emergência",
+    freelance: "Freelance",
+    internet: "Internet",
+    investimentos: "Investimentos",
+    lazer: "Lazer",
+    moradia: "Moradia",
+    outros: "Outros",
+    salario: "Salário",
+    saude: "Saúde",
+    servicos: "Serviços",
+    transporte: "Transporte",
+    venda: "Venda",
+  };
 
- return categoryNames[category] || category
+  return categoryNames[category] || category;
 }
 
 function createTransactionRow(transaction) {
@@ -198,10 +199,10 @@ function filterTransactionsByMonth(transactions) {
   }
 }
 
-function sortTransactionsByDate(transactions){
-  return transactions.sort((a,b)=> {
-    return new Date(b.date) - new Date(a.date)
-    })
+function sortTransactionsByDate(transactions) {
+  return transactions.sort((a, b) => {
+    return new Date(b.date) - new Date(a.date);
+  });
 }
 
 function renderTransactions(transactions) {
@@ -226,9 +227,9 @@ async function fetchTransactions() {
     const response = await fetch(API_URL);
     const transactions = await response.json();
     const filteredTransactions = filterTransactionsByMonth(transactions);
-    const sortedTransactions = sortTransactionsByDate(filteredTransactions)
+    const sortedTransactions = sortTransactionsByDate(filteredTransactions);
 
-    renderTransactions(sortedTransactions)
+    renderTransactions(sortedTransactions);
   } catch (error) {
     console.error("Erro ao buscar transações:", error);
     renderEmptyState();
@@ -291,7 +292,20 @@ async function handleTransactionSubmit(event) {
   }
 }
 
+async function openDeleteConfirmation(id){
+  transactionIdToDelete = id
+  console.log(transactionIdToDelete)
+}
+
 async function deleteTransaction(id) {
+  const confirmDelete = confirm(
+    "Tem certeza que deseja excluir esta movimentação?",
+  );
+
+  if (!confirmDelete) {
+    return;
+  }
+
   try {
     const response = await fetch(`${API_URL}/${id}`, {
       method: "DELETE",
