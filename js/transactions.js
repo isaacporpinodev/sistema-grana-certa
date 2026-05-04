@@ -1,6 +1,6 @@
 const API_URL = "http://localhost:3000/transactions";
 let editingTransactionId = null;
-let transactionIdToDelete = null
+let transactionIdToDelete = null;
 
 const transactionForm = document.getElementById("transaction-form");
 const formMessage = document.getElementById("form-message");
@@ -90,7 +90,7 @@ function createActionsCell(transaction) {
   });
 
   deleteButton.addEventListener("click", () => {
-    deleteTransaction(transaction.id);
+    openDeleteConfirmation(transaction.id);
   });
 
   actionsCell.append(deleteButton, editButton);
@@ -292,9 +292,22 @@ async function handleTransactionSubmit(event) {
   }
 }
 
-async function openDeleteConfirmation(id){
-  transactionIdToDelete = id
-  console.log(transactionIdToDelete)
+async function openDeleteConfirmation(id) {
+  transactionIdToDelete = id;
+  console.log(transactionIdToDelete);
+}
+
+function cancelDeleteConfirmation() {
+  transactionIdToDelete = null;
+}
+
+function confirmDeleteTransaction(){
+  if(transactionIdToDelete === null){
+    return 
+  } 
+
+  deleteTransaction(transactionIdToDelete)
+  transactionIdToDelete = null
 }
 
 async function deleteTransaction(id) {
