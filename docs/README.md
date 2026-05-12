@@ -25,6 +25,7 @@ Hoje o projeto ja consegue:
 - ordenar as movimentacoes da mais recente para a mais antiga
 - exibir categorias com nomes mais amigaveis
 - mostrar datas no formato brasileiro sem alterar o dia
+- confirmar exclusao usando um card/modal proprio
 - exibir botoes de acao na tabela
 
 ## Tecnologias usadas
@@ -212,6 +213,24 @@ Ou seja:
 mudou o mes -> busca dados -> filtra por mes -> ordena -> renderiza
 ```
 
+### Fluxo de exclusao com modal
+
+Hoje a exclusao usa um card/modal proprio em vez do `confirm()` nativo do navegador.
+
+1. O usuario clica em `Excluir`.
+2. O sistema guarda o `id` da movimentacao em `transactionIdToDelete`.
+3. O card/modal de confirmacao e aberto.
+4. Se o usuario cancelar, o `id` guardado volta para `null`.
+5. Se o usuario confirmar, o sistema usa o `id` guardado para excluir a movimentacao.
+6. O modal fecha.
+7. Depois da decisao, o `id` guardado tambem volta para `null`.
+
+Ou seja:
+
+```text
+clicou em excluir -> abre modal -> confirma ou cancela -> fecha modal -> limpa id
+```
+
 ## Como o `transactions.js` esta organizado
 
 Antes, muita coisa ficava misturada no mesmo bloco.
@@ -229,12 +248,15 @@ No comeco do arquivo existem constantes como:
 
 Tambem existe uma variavel importante:
 - `editingTransactionId`
+- `transactionIdToDelete`
 
 Essas constantes servem para guardar:
 - a URL da API
 - referencias para elementos do HTML
 
 Ja `editingTransactionId` serve para guardar qual transacao esta sendo editada no momento.
+
+Ja `transactionIdToDelete` serve para guardar temporariamente qual movimentacao o usuario pretende excluir.
 
 Isso evita repetir `document.getElementById(...)` toda hora.
 
@@ -293,6 +315,9 @@ Exemplos:
 - `createTransactionRow()`
 - `renderTransactions()`
 - `renderEmptyState()`
+- `openDeleteConfirmation()`
+- `cancelDeleteConfirmation()`
+- `confirmDeleteTransaction()`
 
 Essas funcoes cuidam da parte visual da tabela.
 
@@ -340,7 +365,23 @@ Essas funcoes deixam o fluxo mais claro:
 lista original -> lista filtrada -> lista ordenada
 ```
 
-### 8. Funcoes principais
+### 8. Funcoes de confirmacao de exclusao
+
+Funcoes:
+
+```js
+openDeleteConfirmation()
+cancelDeleteConfirmation()
+confirmDeleteTransaction()
+```
+
+`openDeleteConfirmation()` guarda o `id` da movimentacao que o usuario quer excluir.
+
+`cancelDeleteConfirmation()` limpa esse `id`, indicando que a exclusao foi cancelada.
+
+`confirmDeleteTransaction()` verifica se existe um `id` guardado e, se existir, chama a exclusao daquela movimentacao. Depois disso, limpa o `id` e fecha o modal.
+
+### 9. Funcoes principais
 
 As duas funcoes principais hoje sao:
 
@@ -588,10 +629,10 @@ Esse padrao ajuda porque:
 
 Proximos passos naturais do projeto:
 - mostrar visualmente quando o formulario estiver em modo edicao
-- confirmar antes de excluir uma movimentacao
 - tratar o formulario quando o usuario trocar o filtro de mes
 - organizar melhor os arquivos JS ainda vazios
 - limpar dados antigos invalidos do `db.json`
+- melhorar responsividade em telas menores
 - melhorar o layout para ficar mais proximo das telas de referencia
 - preparar o projeto para portfolio com README final, prints e explicacao das funcionalidades
 
@@ -601,10 +642,11 @@ Na proxima etapa, o foco sera continuar melhorando a parte funcional antes do la
 
 Ordem sugerida:
 
-1. Adicionar confirmacao antes de excluir uma movimentacao.
-2. Revisar pequenos pontos de organizacao no `transactions.js`.
-3. Melhorar a experiencia quando o usuario troca o filtro de mes com o formulario preenchido.
-4. Depois disso, comecar a reformar o layout com calma, seguindo as telas de referencia.
+1. Mostrar visualmente quando o formulario estiver em modo edicao.
+2. Melhorar a experiencia quando o usuario troca o filtro de mes com o formulario preenchido.
+3. Revisar pequenos pontos de organizacao no `transactions.js`.
+4. Melhorar responsividade em telas menores.
+5. Depois disso, comecar a reformar o layout com calma, seguindo as telas de referencia.
 
 ## Resumo final
 

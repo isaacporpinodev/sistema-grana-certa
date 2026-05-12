@@ -302,7 +302,7 @@ select {
 }
 
 .transactions-table td {
-  padding: 1rem; 
+  padding: 1rem;
   border-bottom: 1px solid var(--color-border);
   text-align: left;
 }
@@ -418,6 +418,66 @@ select {
   content: "- ";
 }
 
-.cancel-edit-button{
+.cancel-edit-button {
   display: none;
+  width: 100%;
+  padding: 0.85rem;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.cancel-edit-button:hover {
+  background-color: var(--color-bg);
+}
+
+.delete-modal {
+  display: none;
+  position: fixed;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  z-index: 1000;
+}
+
+.delete-modal-content {
+  background-color: var(--color-surface);
+  padding: 2rem;
+  border-radius: var(--radius-md);
+  width: 90%;
+  max-width: 420px;
+  box-shadow: var(--shadow-md);
+}
+
+.delete-modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.confirm-delete-button,
+.cancel-delete-button {
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
+
+.confirm-delete-button {
+  border-color: var(--color-danger);
+  background-color: var(--color-danger);
+  color: #ffffff;
+}
+
+.cancel-delete-button {
+  background-color: var(--color-surface);
+  color: var(--color-text);
 }

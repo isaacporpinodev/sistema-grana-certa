@@ -2,6 +2,9 @@ const API_URL = "http://localhost:3000/transactions";
 let editingTransactionId = null;
 let transactionIdToDelete = null;
 
+const deleteModal = document.getElementById("delete-modal");
+const confirmDeleteBtn = document.getElementById("confirm-delete-button");
+const cancelDeleteBtn = document.getElementById("cancel-delete-button");
 const transactionForm = document.getElementById("transaction-form");
 const formMessage = document.getElementById("form-message");
 const transactionsList = document.getElementById("transactions-list");
@@ -294,30 +297,24 @@ async function handleTransactionSubmit(event) {
 
 async function openDeleteConfirmation(id) {
   transactionIdToDelete = id;
-  console.log(transactionIdToDelete);
+  deleteModal.style.display = "flex";
 }
 
 function cancelDeleteConfirmation() {
   transactionIdToDelete = null;
+  deleteModal.style.display = "none";
 }
 
-function confirmDeleteTransaction(){
-  if(transactionIdToDelete === null){
-    return 
-  } 
-
-  deleteTransaction(transactionIdToDelete)
-  transactionIdToDelete = null
+function confirmDeleteTransaction() {
+  if (!transactionIdToDelete) {
+    return;
+  }
+  deleteTransaction(transactionIdToDelete);
+  transactionIdToDelete = null;
+  deleteModal.style.display = "none"
 }
 
 async function deleteTransaction(id) {
-  const confirmDelete = confirm(
-    "Tem certeza que deseja excluir esta movimentação?",
-  );
-
-  if (!confirmDelete) {
-    return;
-  }
 
   try {
     const response = await fetch(`${API_URL}/${id}`, {
@@ -360,5 +357,6 @@ function cancelEditing() {
 transactionForm.addEventListener("submit", handleTransactionSubmit);
 cancelEditBtn.addEventListener("click", cancelEditing);
 monthFilter.addEventListener("change", fetchTransactions);
-
+cancelDeleteBtn.addEventListener("click", cancelDeleteConfirmation)
+confirmDeleteBtn.addEventListener("click", confirmDeleteTransaction)
 fetchTransactions();

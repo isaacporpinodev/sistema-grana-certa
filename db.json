@@ -1,44 +1,12 @@
 {
   "transactions": [
     {
-      "description": "Sálario",
-      "amount": 2800,
-      "category": "outros",
-      "date": "2026-04-22",
-      "type": "entrada",
-      "id": "bf15"
-    },
-    {
-      "description": "Aluguel",
-      "amount": 800,
-      "category": "moradia",
-      "date": "2026-05-02",
-      "type": "saida",
-      "id": "b47d"
-    },
-    {
-      "description": "Mercado",
-      "amount": 270,
-      "category": "alimentacao",
-      "date": "2026-04-22",
-      "type": "saida",
-      "id": "3c46"
-    },
-    {
       "id": "fea9",
       "description": "luz",
       "amount": 100,
       "category": "moradia",
       "date": "2026-04-22",
       "type": "saida"
-    },
-    {
-      "description": "Emergencia",
-      "amount": 350,
-      "category": "outros",
-      "date": "2026-04-22",
-      "type": "saida",
-      "id": "6a92"
     },
     {
       "id": "a57a",
@@ -79,6 +47,14 @@
       "date": "2026-01-10",
       "type": "saida",
       "id": "xnxQeBVrXp8"
+    },
+    {
+      "description": "Sálario",
+      "amount": 2900,
+      "category": "salario",
+      "date": "2026-05-12",
+      "type": "entrada",
+      "id": "gRxhr_LYduI"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

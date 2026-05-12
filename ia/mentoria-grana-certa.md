@@ -1,6 +1,6 @@
 # Plano de Evolucao — Isaac Porpino
 
-**Atualizado em:** 2 de maio de 2026  
+**Atualizado em:** 11 de maio de 2026  
 **Projeto atual:** Grana Certa  
 **Objetivo:** construir um projeto de portfolio simples, bem funcional e bem explicado, com base real em HTML, CSS, JavaScript e consumo de API fake com JSON Server.
 
@@ -36,6 +36,7 @@ Hoje o `Grana Certa` ja consegue:
 - ordenar movimentacoes da mais recente para a mais antiga
 - exibir categorias com nomes mais amigaveis
 - corrigir exibicao de datas no formato brasileiro sem voltar um dia
+- confirmar exclusao com um card/modal proprio
 
 ---
 
@@ -75,6 +76,7 @@ Hoje o `Grana Certa` ja consegue:
 - `addEventListener`
 - eventos de `submit`, `click` e `change`
 - controle de exibicao com `style.display`
+- criacao de fluxo para modal/card de confirmacao
 
 ### Pensamento de produto
 
@@ -161,19 +163,19 @@ usuario muda o select de mes
 
 ```text
 usuario clica em excluir
--> confirm nativo pergunta se deseja excluir
--> se cancelar, nada acontece
--> se confirmar, faz DELETE
--> atualiza tabela e cards
+-> sistema guarda o id em transactionIdToDelete
+-> modal de confirmacao abre
+-> se cancelar, fecha modal e limpa id
+-> se confirmar, exclui a movimentacao, fecha modal e limpa id
 ```
 
 ---
 
-## Proximo objetivo tecnico
+## Objetivo tecnico concluido
 
-Trocar o `confirm()` nativo por uma logica preparada para um card/modal de confirmacao.
+O `confirm()` nativo foi substituido por um card/modal proprio de confirmacao.
 
-O fluxo desejado sera:
+O fluxo atual e:
 
 ```text
 clicou em excluir
@@ -192,7 +194,7 @@ clicou em confirmar
 -> atualiza tabela
 ```
 
-Ja foi iniciado:
+Ja foi iniciado no codigo:
 
 ```text
 transactionIdToDelete = null
@@ -200,38 +202,50 @@ transactionIdToDelete = null
 
 Essa variavel vai guardar temporariamente o id da movimentacao que o usuario quer excluir.
 
+Foram criadas as funcoes:
+
+```text
+openDeleteConfirmation(id)
+cancelDeleteConfirmation()
+confirmDeleteTransaction()
+```
+
+Estado atual dessas funcoes:
+
+- `openDeleteConfirmation(id)`: recebe o id da movimentacao e guarda em `transactionIdToDelete`.
+- `cancelDeleteConfirmation()`: limpa o id guardado, voltando `transactionIdToDelete` para `null`, e fecha o modal.
+- `confirmDeleteTransaction()`: verifica se existe id guardado, chama `deleteTransaction(transactionIdToDelete)`, limpa o id e fecha o modal.
+- `deleteTransaction(id)`: ficou responsavel apenas por excluir de verdade na API.
+
 ---
 
 ## Proximos passos do projeto
 
-### Passo 1 — Logica do card de confirmacao
+### Passo 1 — Estado visual de edicao
 
-- criar funcao `openDeleteConfirmation(id)`
-- guardar o `id` em `transactionIdToDelete`
-- trocar o clique do botao excluir para chamar essa funcao
-- depois criar funcoes para confirmar ou cancelar a exclusao
+- mostrar para o usuario quando o formulario estiver em modo de edicao
+- deixar o titulo do formulario mais claro durante a edicao
+- talvez adicionar uma classe visual na area do formulario
 
-### Passo 2 — HTML do card
+### Passo 2 — Experiencia ao trocar filtros
 
-- criar uma estrutura simples para o card/modal de confirmacao
-- incluir titulo, mensagem e dois botoes
-- botoes esperados:
-  - `Cancelar`
-  - `Excluir`
+- decidir o que acontece se o usuario trocar o mes enquanto esta editando
+- decidir o que acontece se o usuario trocar o mes com o formulario preenchido
+- evitar perda acidental de dados digitados
 
-### Passo 3 — CSS do card
+### Passo 3 — Organizacao dos arquivos JS
 
-- criar fundo escurecido
-- centralizar o card
-- usar visual limpo e consistente com o projeto
-- destacar o botao de excluir como acao perigosa
+- depois que as funcionalidades estiverem estaveis, separar responsabilidades
+- `ui.js` pode receber modal e mensagens
+- `filters.js` pode receber filtro por mes e ordenacao
+- `storage.js` pode receber chamadas para API
+- `theme.js` pode receber tema claro/escuro
 
-### Passo 4 — Integrar logica + card
+### Passo 4 — Responsividade
 
-- abrir card ao clicar em excluir
-- fechar card ao clicar em cancelar
-- excluir de verdade ao clicar em confirmar
-- limpar `transactionIdToDelete` depois de qualquer decisao
+- ajustar cards, formulario e tabela em telas menores
+- preencher `responsive.css`
+- garantir que a tabela continue usavel no mobile
 
 ---
 
