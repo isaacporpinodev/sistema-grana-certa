@@ -311,11 +311,10 @@ function confirmDeleteTransaction() {
   }
   deleteTransaction(transactionIdToDelete);
   transactionIdToDelete = null;
-  deleteModal.style.display = "none"
+  deleteModal.style.display = "none";
 }
 
 async function deleteTransaction(id) {
-
   try {
     const response = await fetch(`${API_URL}/${id}`, {
       method: "DELETE",
@@ -357,6 +356,6 @@ function cancelEditing() {
 transactionForm.addEventListener("submit", handleTransactionSubmit);
 cancelEditBtn.addEventListener("click", cancelEditing);
 monthFilter.addEventListener("change", fetchTransactions);
-cancelDeleteBtn.addEventListener("click", cancelDeleteConfirmation)
-confirmDeleteBtn.addEventListener("click", confirmDeleteTransaction)
+cancelDeleteBtn.addEventListener("click", cancelDeleteConfirmation);
+confirmDeleteBtn.addEventListener("click", confirmDeleteTransaction);
 fetchTransactions();
