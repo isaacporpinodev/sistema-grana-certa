@@ -1,6 +1,7 @@
+﻿// ======================
+// Constantes e Seletores
+// ======================
 const API_URL = "http://localhost:3000/transactions";
-let editingTransactionId = null;
-let transactionIdToDelete = null;
 
 const deleteModal = document.getElementById("delete-modal");
 const confirmDeleteBtn = document.getElementById("confirm-delete-button");
@@ -14,18 +15,20 @@ const balanceElement = document.getElementById("saldo-total");
 const submitBtn = document.querySelector(".submit-button");
 const cancelEditBtn = document.getElementById("cancel-edit-button");
 const monthFilter = document.getElementById("month-filter");
+const userBtn = document.querySelector(".user-button");
+const dropdownMenu = document.querySelector(".dropdown-menu");
+const userMenu = document.querySelector(".user-menu");
+const themeToggleBtn = document.querySelector(".theme-toggle");
 
-function showFormMessage(message, type) {
-  formMessage.classList.remove("success", "error", "warning");
-  formMessage.style.display = "block";
-  formMessage.innerText = message;
-  formMessage.classList.add(type);
-}
+// ======================
+// Estado da aplicação
+// ======================
+let editingTransactionId = null;
+let transactionIdToDelete = null;
 
-function hideFormMessage() {
-  formMessage.style.display = "none";
-}
-
+// ======================
+// Funções utilitárias
+// ======================
 function formatCurrency(value) {
   return Number(value).toLocaleString("pt-BR", {
     style: "currency",
@@ -36,6 +39,28 @@ function formatCurrency(value) {
 function formatDate(dateString) {
   const [year, month, day] = dateString.split("-");
   return `${day}/${month}/${year}`;
+}
+
+function formatCategory(category) {
+  const categoryNames = {
+    alimentacao: "Alimentação",
+    assinaturas: "Assinaturas",
+    educacao: "Educação",
+    emergencia: "Emergência",
+    freelance: "Freelance",
+    internet: "Internet",
+    investimentos: "Investimentos",
+    lazer: "Lazer",
+    moradia: "Moradia",
+    outros: "Outros",
+    salario: "Salário",
+    saude: "Saúde",
+    servicos: "Serviços",
+    transporte: "Transporte",
+    venda: "Venda",
+  };
+
+  return categoryNames[category] || category;
 }
 
 function getTransactionFormData() {
@@ -72,6 +97,70 @@ function validateTransactionData(transactionData) {
   return null;
 }
 
+function filterTransactionsByMonth(transactions) {
+  const selectedMonth = monthFilter.value;
+
+  if (selectedMonth === "todos") {
+    return transactions;
+  }
+
+  return transactions.filter((transaction) => {
+    return transaction.date.startsWith(selectedMonth);
+  });
+}
+
+function sortTransactionsByDate(transactions) {
+  return transactions.sort((a, b) => {
+    return new Date(b.date) - new Date(a.date);
+  });
+}
+
+// ======================
+// Funções de interface
+// ======================
+function showFormMessage(message, type) {
+  formMessage.classList.remove("success", "error", "warning");
+  formMessage.style.display = "block";
+  formMessage.innerText = message;
+  formMessage.classList.add(type);
+}
+
+function hideFormMessage() {
+  formMessage.style.display = "none";
+}
+
+function openDeleteConfirmation(id) {
+  transactionIdToDelete = id;
+  deleteModal.style.display = "flex";
+}
+
+function cancelDeleteConfirmation() {
+  transactionIdToDelete = null;
+  deleteModal.style.display = "none";
+}
+
+function toggleDropdownMenu() {
+  dropdownMenu.classList.toggle("open");
+}
+
+function closeDropdownOnOutsideClick(event) {
+  if (!userMenu.contains(event.target)) {
+    dropdownMenu.classList.remove("open");
+  }
+}
+
+function toggleTheme() {
+  document.body.classList.toggle("dark");
+  const theme = document.body.classList.contains("dark") ? "dark" : "light";
+  localStorage.setItem("theme", theme);
+}
+
+function loadThemePreference() {
+  if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark");
+  }
+}
+
 function createActionsCell(transaction) {
   const actionsCell = document.createElement("td");
   const deleteButton = document.createElement("button");
@@ -97,35 +186,11 @@ function createActionsCell(transaction) {
   });
 
   actionsCell.append(deleteButton, editButton);
-
   return actionsCell;
-}
-
-function formatCategory(category) {
-  const categoryNames = {
-    alimentacao: "Alimentação",
-    assinaturas: "Assinaturas",
-    educacao: "Educação",
-    emergencia: "Emergência",
-    freelance: "Freelance",
-    internet: "Internet",
-    investimentos: "Investimentos",
-    lazer: "Lazer",
-    moradia: "Moradia",
-    outros: "Outros",
-    salario: "Salário",
-    saude: "Saúde",
-    servicos: "Serviços",
-    transporte: "Transporte",
-    venda: "Venda",
-  };
-
-  return categoryNames[category] || category;
 }
 
 function createTransactionRow(transaction) {
   const transactionRow = document.createElement("tr");
-
   const descriptionCell = document.createElement("td");
   const categoryCell = document.createElement("td");
   const dateCell = document.createElement("td");
@@ -169,6 +234,22 @@ function renderEmptyState() {
   `;
 }
 
+function renderTransactions(transactions) {
+  transactionsList.innerHTML = "";
+
+  if (transactions.length === 0) {
+    renderEmptyState();
+    updateSummaryCards([]);
+    return;
+  }
+
+  transactions.forEach((transaction) => {
+    transactionsList.append(createTransactionRow(transaction));
+  });
+
+  updateSummaryCards(transactions);
+}
+
 function updateSummaryCards(transactions) {
   let totalIncome = 0;
   let totalExpense = 0;
@@ -190,41 +271,28 @@ function updateSummaryCards(transactions) {
   balanceElement.innerText = formatCurrency(balance);
 }
 
-function filterTransactionsByMonth(transactions) {
-  const selectedMonth = monthFilter.value;
-
-  if (selectedMonth === "todos") {
-    return transactions;
-  } else {
-    return transactions.filter((transaction) => {
-      return transaction.date.startsWith(selectedMonth);
-    });
-  }
+function fillFormWithTransaction(transaction) {
+  document.getElementById("description").value = transaction.description;
+  document.getElementById("amount").value = transaction.amount;
+  document.getElementById("category").value = transaction.category;
+  document.getElementById("date").value = transaction.date;
+  document.getElementById("type").value = transaction.type;
 }
 
-function sortTransactionsByDate(transactions) {
-  return transactions.sort((a, b) => {
-    return new Date(b.date) - new Date(a.date);
-  });
+function resetEditMode() {
+  editingTransactionId = null;
+  submitBtn.innerText = "Salvar movimentação";
+  cancelEditBtn.style.display = "none";
 }
 
-function renderTransactions(transactions) {
-  transactionsList.innerHTML = "";
-
-  if (transactions.length === 0) {
-    renderEmptyState();
-    updateSummaryCards([]);
-    return;
-  }
-
-  transactions.forEach((transaction) => {
-    const transactionRow = createTransactionRow(transaction);
-    transactionsList.append(transactionRow);
-  });
-
-  updateSummaryCards(transactions);
+function cancelEditing() {
+  transactionForm.reset();
+  resetEditMode();
 }
 
+// ======================
+// CRUD das transações
+// ======================
 async function fetchTransactions() {
   try {
     const response = await fetch(API_URL);
@@ -241,7 +309,6 @@ async function fetchTransactions() {
 
 async function handleTransactionSubmit(event) {
   event.preventDefault();
-
   hideFormMessage();
 
   const transactionData = getTransactionFormData();
@@ -283,35 +350,12 @@ async function handleTransactionSubmit(event) {
     transactionForm.reset();
     showFormMessage(successMessage, "success");
     fetchTransactions();
-    editingTransactionId = null;
-    submitBtn.innerText = "Salvar movimentação";
-    cancelEditBtn.style.display = "none";
+    resetEditMode();
 
-    setTimeout(() => {
-      hideFormMessage();
-    }, 3000);
+    setTimeout(hideFormMessage, 3000);
   } catch (error) {
     showFormMessage("Erro ao salvar movimentação.", "error");
   }
-}
-
-async function openDeleteConfirmation(id) {
-  transactionIdToDelete = id;
-  deleteModal.style.display = "flex";
-}
-
-function cancelDeleteConfirmation() {
-  transactionIdToDelete = null;
-  deleteModal.style.display = "none";
-}
-
-function confirmDeleteTransaction() {
-  if (!transactionIdToDelete) {
-    return;
-  }
-  deleteTransaction(transactionIdToDelete);
-  transactionIdToDelete = null;
-  deleteModal.style.display = "none";
 }
 
 async function deleteTransaction(id) {
@@ -319,43 +363,48 @@ async function deleteTransaction(id) {
     const response = await fetch(`${API_URL}/${id}`, {
       method: "DELETE",
     });
+
     if (!response.ok) {
       throw new Error("Request failed");
     }
 
     showFormMessage("Movimentação excluída com sucesso!", "success");
     fetchTransactions();
-
-    setTimeout(() => {
-      hideFormMessage();
-    }, 3000);
+    setTimeout(hideFormMessage, 3000);
   } catch (error) {
     showFormMessage("Erro ao excluir movimentação.", "error");
   }
 }
 
-function fillFormWithTransaction(transaction) {
-  document.getElementById("description").value = transaction.description;
+function confirmDeleteTransaction() {
+  if (!transactionIdToDelete) {
+    return;
+  }
 
-  document.getElementById("amount").value = transaction.amount;
-
-  document.getElementById("category").value = transaction.category;
-
-  document.getElementById("date").value = transaction.date;
-
-  document.getElementById("type").value = transaction.type;
+  deleteTransaction(transactionIdToDelete);
+  cancelDeleteConfirmation();
 }
 
-function cancelEditing() {
-  transactionForm.reset();
-  editingTransactionId = null;
-  submitBtn.innerText = "Salvar movimentação";
-  cancelEditBtn.style.display = "none";
-}
-
+// ======================
+// Eventos
+// ======================
 transactionForm.addEventListener("submit", handleTransactionSubmit);
 cancelEditBtn.addEventListener("click", cancelEditing);
 monthFilter.addEventListener("change", fetchTransactions);
 cancelDeleteBtn.addEventListener("click", cancelDeleteConfirmation);
 confirmDeleteBtn.addEventListener("click", confirmDeleteTransaction);
+
+if (themeToggleBtn) {
+  themeToggleBtn.addEventListener("click", toggleTheme);
+}
+
+if (userBtn && dropdownMenu && userMenu) {
+  userBtn.addEventListener("click", toggleDropdownMenu);
+  document.addEventListener("click", closeDropdownOnOutsideClick);
+}
+
+// ======================
+// Inicialização
+// ======================
+loadThemePreference();
 fetchTransactions();

@@ -1,14 +1,6 @@
 {
   "transactions": [
     {
-      "id": "fea9",
-      "description": "luz",
-      "amount": 100,
-      "category": "moradia",
-      "date": "2026-04-22",
-      "type": "saida"
-    },
-    {
       "id": "a57a",
       "description": "ifood",
       "amount": 200,
